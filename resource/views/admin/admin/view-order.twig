@@ -220,6 +220,18 @@ based on db info #}
                             </div>
                         </div>
                     {% endif %}
+                    {% if completed_order_files %}
+                        <div class="order-details__detail col-md-3">
+                            <div class="order-details__detail__label">
+                                فایل های ترجمه شده
+                            </div>
+                            <div class="order-details__detail__value">
+                                {% for file in completed_order_files %}
+                                    <a style='display:block' href='/public/uploads/order/completed/{{file}}' download="{{file}}">{{file}}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                     {% if description %}
                         <div class="order-details__detail col-md-10">
                             <div class="order-details__detail__label">

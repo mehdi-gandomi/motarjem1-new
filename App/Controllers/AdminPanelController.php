@@ -358,6 +358,7 @@ class AdminPanelController extends Controller
         if($orderData){
             $orderData['found']=count($orderData) ? true:false;
             $orderData['order_files']=explode(",",$orderData['order_files']);
+            $orderData['completed_order_files']=explode(",",$orderData['completed_order_files']);
         }
         return $this->view->render($res,"/admin/admin/view-order.twig",$orderData);
     }
