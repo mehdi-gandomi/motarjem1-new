@@ -54,12 +54,12 @@
                                 <th class="bg-teal-dark">شماره سفارش</th>
                                 <th class="bg-teal-dark">تعداد صفحات</th>
                                 <th class="bg-teal-dark">زبان ترجمه</th>
-                                <th class="bg-teal-dark">کیفیت ترجمه</th>
+                                {#<th class="bg-teal-dark">کیفیت ترجمه</th>#}
 
                                 <th class="bg-teal-dark">هزینه ترجمه</th>
                                 <th class="bg-teal-dark">وضعیت پرداخت</th>
                                 <th class="bg-teal-dark">وضعیت تایید</th>
-
+                                <th class="bg-teal-dark">وضعیت انجام</th>
                                 <th class="bg-teal-dark">مترجم</th>
                                 <th class="bg-teal-dark">جزییات</th>
                             </tr>
@@ -68,7 +68,7 @@
                             {% for order in orders %}
                                 {% set page_number = order.word_numbers / 250 | round(0,'ceil')  %}
                                 <tr>
-                                    <td data-label='شماره سفارش' style='unicode-bidi: embed;direction: ltr;'>#{{ order.order_number }}</td>
+                                    <td data-label='شماره سفارش' style='unicode-bidi: embed;direction: ltr;'>{{ order.order_number }}</td>
                                     <td data-label='تعداد صفحات'>{{ page_number }}</td>
                                     <td data-label='زبان ترجمه'>
                                         {{
@@ -77,9 +77,9 @@
                       : "فارسی به انگلیسی"
                   }}
                                     </td>
-                                    <td data-label='کییفیت ترجمه'>
-                                        {{ order.translation_quality == "5" ? "نقره ای" : "طلایی" }}
-                                    </td>
+                                    {#<td data-label='کییفیت ترجمه'>#}
+                                        {#{{ order.translation_quality == "5" ? "نقره ای" : "طلایی" }}#}
+                                    {#</td>#}
 
                                     <td data-label='هزینه ترجمه'>{{ order.order_price |number_format }}
                                         تومان</td>
@@ -91,11 +91,18 @@
                                         {% endif %}
                                     </td>
                                     <td data-label='وضعیت تایید'>{{ order.is_accepted == "0" ? "تایید نشده" : "تایید شده" }}</td>
+                                    <td data-label='وضعیت انجام'>
+                                        {% if order.is_done == '0' %}
+                                            <p>درحال انجام</p>
+                                        {% else %}
+                                            <p>انجام شده</p>
+                                        {% endif %}
+                                    </td>
                                     <td data-label='مترجم'>
                                         {% if order.translator_id == '0' %}
                                             <p>مشخص نشده</p>
                                         {% else %}
-                                            <a style="cursor:pointer;color:#20a8d8" onclick="showTranslatorInfo('{{ order.translator_id }}')">مشاهده اطلاعات مترجم</a>
+                                            <a style="cursor:pointer;color:#20a8d8" onclick="showTranslatorInfo('{{ order.translator_id }}')"> اطلاعات مترجم</a>
                                         {% endif %}
 
                                     </td>

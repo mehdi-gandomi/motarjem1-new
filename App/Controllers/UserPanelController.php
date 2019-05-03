@@ -106,6 +106,8 @@ class UserPanelController extends Controller
                 $orderData['translator_fname'] = $translatorData['fname'];
                 $orderData['translator_lname'] = $translatorData['lname'];
             }
+            $orderData['order_files']=explode(",",$orderData['order_files']);
+            $orderData['completed_order_files']=explode(",",$orderData['completed_order_files']);
             return $this->view->render($res, "admin/user/order-details.twig", $orderData);
         }else{
             return $this->view->render($res, "admin/user/order-details.twig", ['found'=>false]);

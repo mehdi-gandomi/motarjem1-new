@@ -16,13 +16,13 @@ function showOrders(data) {
       let translation_type = "";
       let translation_quality = "";
       let accepted = "";
-      if (order.delivery_type == 1) {
-        delivery_type = "معمولی";
-      } else if (order.delivery_type == 2) {
-        delivery_type = "نیمه فوری";
-      } else if (order.delivery_type == 3) {
-        delivery_type = "فوری";
-      }
+      // if (order.delivery_type == 1) {
+      //   delivery_type = "معمولی";
+      // } else if (order.delivery_type == 2) {
+      //   delivery_type = "نیمه فوری";
+      // } else if (order.delivery_type == 3) {
+      //   delivery_type = "فوری";
+      // }
 
       if (order.translation_type == 1) {
         translation_type = "فارسی به انگلیسی";
@@ -42,26 +42,17 @@ function showOrders(data) {
         accepted = "تایید شده";
       }
       output += "<tr>";
-      output += "<td>" + order.order_number + "</td>";
-      output += "<td>" + pageNumber + "</td>";
-      output += "<td>" + translation_type + "</td>";
-      output += "<td>" + translation_quality + "</td>";
-      output += "<td>" + delivery_type + "</td>";
-      output += "<td>" + parseInt(order.order_price).toLocaleString("us") + "</td>";
-      output += "<td>" + accepted + "</td>";
-
-      output +=
-        "<td><a style='cursor:pointer;color:#20a8d8' onclick='showTranslatorInfo(\"" +
-        order.translator_id +
-        "\")'>" +
-        order.translator_fname +
-        " " +
-        order.translator_lname +
-        "</a></td>";
-      output +=
-        "<td><a href='/user/order/view/" +
-        order.order_number +
-        "' class='btn btn-primary'>مشاهده سفارش</a></td>";
+      output += "<td data-label='شماره سفارش'>" + order.order_number + "</td>";
+      output += "<td data-label='تعداد صفحات'>" + pageNumber + "</td>";
+      output += "<td data-label='زبان ترجمه'>" + translation_type + "</td>";
+      // output += "<td>" + translation_quality + "</td>";
+      // output += "<td>" + delivery_type + "</td>";
+      output += "<td data-label='هزینه ترجمه'>" + parseInt(order.order_price).toLocaleString("us") + "</td>";
+      output += "<td data-label='وضعیت پرداخت'>" + (order.transaction_code == '0' ? "پرداخت نشده":"پرداخت شده") + "</td>";
+      output += "<td data-label='وضعیت تایید'>" + accepted + "</td>";
+      output += "<td data-label='وضعیت انجام'>" + (order.is_done == '0' ? "درحال انجام":"انجام شده") + "</td>";
+      output += "<td data-label='مترجم'>" + (order.translator_id == '0' ? "مشخص نشده":"<a style='cursor:pointer;color:#20a8d8' onclick='showTranslatorInfo(\""+order.translator_id+"\")'>اطلاعات مترجم</a>") + "</td>";
+      output+="<td data-label='جزییات' class='order-more-info'> <a href='/user/order/view/"+order.order_number+"'> <svg width='13px' height='23px' viewbox='0 0 50 80' xml:space='preserve'> <polyline fill='none' stroke='#a9a9a9' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' points='45.63,75.8 0.375,38.087 45.63,0.375 '/></svg > </a> </td>";
     });
   }
   document.getElementById("user-orders").innerHTML = output;
