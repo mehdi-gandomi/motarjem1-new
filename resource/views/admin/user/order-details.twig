@@ -1,0 +1,325 @@
+{% extends "admin/layout/user.twig" %}
+{% block style_below %}
+    <style media="print">
+        .title-section {
+            display: block;
+        }
+        .title-section h3 {
+            text-align: center;
+        }
+        .title-section .btn {
+            display: none;
+        }
+    </style>
+    <style>
+        .button {
+            padding: 0.375rem 0.75rem;
+            text-align: center;
+            border-radius: 8px;
+            display: inline-block;
+            vertical-align: middle;
+            border: 0;
+            cursor: pointer;
+        }
+        .button.has--lighter-shadow {
+            box-shadow: 0 0 1.5px rgba(0,0,0,.19), 0 1.3px 0 rgba(0,0,0,.23);
+        }
+        .button:active,
+        .button:focus,
+        .button:hover {
+            text-decoration: none;
+            outline: none;
+        }
+    </style>
+    <link rel="stylesheet" href="/public/css/order-result.css">
+{% endblock %}
+{% block content %}
+    {# START declaring
+variables based on db info #}
+    {% if delivery_type == '1' %}
+        {% set
+        delivery_type_text = "معمولی" %}
+    {% endif %}
+    {% if delivery_type == '2' %}
+        {% set delivery_type_text = "نیمه فوری" %}
+    {% endif %}
+    {% if delivery_type == '3' %}
+        {% set delivery_type_text = "فوری" %}
+    {% endif %}
+    {# END declaring variables
+based on db info #}
+
+    <main class="main">
+        <div class="card">
+            <div class="card-body">
+                {% if found %}
+                
+                    <div class="title-section mb-5 mt-3 ">
+                    <h3 class="text-center">جزییات سفارش</h3>
+                    <div>
+                        <button class="btn btn-success" onclick="window.print()">
+                            <i class="icon-printer"></i>
+                            پرینت
+                        </button>
+                        {% if transaction_code == '0' %}
+                            <button class="btn btn-success" data-toggle="modal" data-target="#orderPaymentModal">
+                                <i class="icon-credit-card"></i>
+                                پرداخت
+                            </button>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <div class="order-details row">
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            شماره سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ order_number }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            شماره تراکنش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {% if transaction_code == '0' %}
+                            <p style="color:red">پرداخت نشده</p>
+                            {% else %}
+                                {{ transaction_code }}
+
+                            {% endif %}
+                            
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            تعداد صفحات
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ word_numbers / 250 }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            زبان ترجمه
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{translation_lang == "1" ? "انگلیسی به فارسی" : "فارسی به انگلیسی"}}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            کیفیت ترجمه
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ translation_quality == "5" ? "نقره ای" : "طلایی" }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            نوع ترجمه
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{translation_kind == '1' ? "عمومی":"تخصصی"}}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            رشته تخصصی
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ study_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            زمان تحویل
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ delivery_type_text }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            زمان تحویل به روز
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ delivery_days }}
+                            روز
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            تاریخ ثبت سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ order_date_persian }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            وضعیت تایید
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ is_accepted == "0" ? "تایید نشده" : "تایید شده" }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            تاریخ تایید سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            
+                            {{ accept_date_persian ? accept_date_persian:"تایید نشده"}}
+                            
+                            
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            مترجم
+                        </div>
+                        <div class="order-details__detail__value">
+                            {% if translator_id == 0 %}
+                                <p>مشخص نشده</p>
+                            {% else %}
+                                <a onclick="showTranslatorInfo('{{ translator_id }}')" style="cursor:pointer;color:#20a8d8">{{translator_fname ~ " " ~ translator_lname}}</a>    
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            قیمت کل سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ order_price }}
+                            تومان
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            وضعیت اتمام
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ is_done == "0" ? "تمام نشده" : "تمام شده" }}
+                        </div>
+                    </div>
+                    {% if description %}
+                        <div class="order-details__detail col-md-10">
+                            <div class="order-details__detail__label">
+                                توضیحات
+                            </div>
+                            <div class="order-details__detail__value">
+                                {{ description }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                    <h3 class="text-center p-5">چنین سفارشی یافت نشد !</h3>
+                {% endif %}
+                
+            </div>
+        </div>
+    </main>
+    <!-- Modal -->
+    <div class="modal fade" id="orderPaymentModal" tabindex="-1" role="dialog" aria-labelledby="orderPaymentModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h4 class="modal-title" id="orderPaymentModalLabel">پرداخت سفارش</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3 class="text-center">
+                                مبلغ قابل پرداخت
+                                {{order_price}}
+                                تومان
+                            </h3>
+
+                            <p class="text-center" style="font-size: 1rem;color: #7f95ad;">لطفا یکی از درگاه های زیر را برای پرداخت انتخاب کنید</p>
+                        </div>
+                        <div class="col-12">
+                            <div class="payment-gateways">
+                                <form action="/user/order-payment/{{order_number}}" method="POST">
+                                    <div class="mellat">
+                                        <button type="submit" name="gateway" value="mellat" class="button mellat has--lighter-shadow" readonly="readonly">
+                                            <img src="/public/images/icon/Behpardakht.png" alt="mellat">
+                                            <span>پرداخت توسط درگاه بانک ملت</span>
+                                        </button>
+                                    </div>
+                                    <div class="or">یا</div>
+                                    <div class="zarinpal">
+                                        <button type="submit" name="gateway" value="zarinpal" class="button zarinpal has--lighter-shadow" readonly="readonly">
+                                            <img src="/public/images/icon/zarinpal.png" alt="zarinpal">
+                                            <span>پرداخت توسط زرین پال</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-start">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">انصراف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   {# translator info modal #}
+    <!-- Modal -->
+    <div aria-hidden="true" aria-labelledby="translatorInfoLabel" class="modal fade" id="translatorInfo" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="translatorInfoLabel">اطلاعات مترجم</h5>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="translator-info">
+                        <div class="translator-info__avatar">
+                            <img alt="" id="translator-avatar" src=""></div>
+                            <div class="translator-info__info">
+                                <div class="translator-info__info__item">
+                                    <label for="">نام مترجم :‌
+                                    </label>
+                                    <strong id="translator-name"></strong>
+                                </div>
+                                <div class="translator-info__info__item">
+                                    <label for="">ایمیل :
+                                    </label>
+                                    <strong id="translator-email"></strong>
+                                </div>
+                                <div class="translator-info__info__item">
+                                    <label for="">شماره موبایل</label>
+                                    <strong id="translator-phone"></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script_below %}
+    <script>
+        function showTranslatorInfo(translatorId) {
+                console.log(translatorId);
+                $("#translatorInfo").modal("show");
+                $.get("/user/translator/getinfo/" + translatorId, function (res) {
+                    $("#translator-avatar").attr("src", "/public/uploads/avatars/user/" + res.avatar);
+                    $("#translator-name").text(res.fname + " " + res.lname);
+                    $("#translator-email").text(res.email);
+                    $("#translator-phone").text(res.cell_phone);
+                });
+            }
+    </script>
+{% endblock %}

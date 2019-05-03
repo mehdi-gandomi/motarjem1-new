@@ -1,0 +1,28 @@
+@import "components/fontiran";
+@import "components/icons/coreui-icons";
+@import "components/icons/simple-line-icons";
+@import "components/coreui/coreui.scss";
+@import "components/pace";
+@import "components/custom";
+@import "components/avatar";
+@import "components/hint";
+@import "components/expand-button";
+//pages
+//user admin panel pages
+@import "pages/user/dashboard";
+@import "pages/user/orders";
+@import "pages/user/new-order";
+@import "pages/user/order_details";
+@import "pages/user/view-message";
+@import "pages/user/edit-profile";
+//end user admin panel pages
+
+//translator panel pages
+@import "pages/translator/dashboard";
+@import "pages/translator/account-report";
+@import "pages/translator/edit-profile";
+
+//admin panel pages
+@import "pages/admin/dashboard";
+@import "pages/admin/hired";
+@import "pages/admin/translator-info";

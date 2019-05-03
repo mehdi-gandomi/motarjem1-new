@@ -1,0 +1,418 @@
+{% extends 'admin/layout/translator.twig' %}
+{% block style_below %}
+    <link rel="stylesheet" href="/public/css/medium-editor.min.css"/>
+    <link rel="stylesheet" href="/public/css/medium-theme.min.css"/>
+{% endblock %}
+{% block content %}
+    <main class="main">
+        {% if user.is_employed %}
+            <div class="container">
+                <div class="info-cards ">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a href="/translator/orders" class="info-card">
+                                <div class="info-card__icon bg-primary">
+                                    <img src="/public/images/icon/project-panel.svg" alt=""/>
+                                </div>
+
+                                <div class="info-card__content">
+                                    <div class="info-card__content__title">
+                                        ترجمه های محول شده به شما
+                                    </div>
+                                    <div class="info-card__content__value">
+                                        {{ translator_orders_count ? translator_orders_count : 0}}
+                                        <span class="f-1rem ml-2">پروژه</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <div href="/translator/account-report" class="info-card">
+                                <div class="info-card__icon bg-success">
+                                    <img src="/public/images/icon/income.svg" alt=""/>
+                                </div>
+
+                                <div class="info-card__content">
+                                    <div class="info-card__content__title">میزان درآمد</div>
+                                    <div class="info-card__content__value">
+                                        {{ translator_revenue ? translator_revenue : 0 }}
+                                        <span class="f-1rem">تومان</span>
+                                    </div>
+                                    <div class="info-card__content__link">
+                                        <a href="#" data-target="#requestCheckoutModal" data-toggle="modal">درخواست پرداخت وجه</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/translator/messages?unread=true" class="info-card">
+                                <div class="info-card__icon bg-danger">
+                                    <img src="/public/images/icon/message.svg" alt=""/>
+                                </div>
+
+                                <div class="info-card__content">
+                                    <div class="info-card__content__title">پیام های خوانده نشده</div>
+                                    <div class="info-card__content__value">
+                                        {{ unread_messages_count ? unread_messages_count : 0 }}
+                                        <span class="f-1rem ml-1">پیام</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class=" card">
+                            <div class="card-header f-1rem">
+                                <i class="icon-user"></i>
+                                مشخصات شما
+                            </div>
+                            <div class="card-body profile-info">
+                                <div class="item">
+                                    <span>نام شما :
+                                    </span>
+                                    <strong>{{ user.fname }}</strong>
+                                </div>
+                                <div class="item">
+                                    <span>نام خانوادگی شما :
+                                    </span>
+                                    <strong>{{ user.lname }}</strong>
+                                </div>
+                                <div class="item">
+                                    <span>ایمیل شما :
+                                    </span>
+                                    <strong>{{ user.email }}</strong>
+                                </div>
+                                <div class="item">
+                                    <span>شماره همراه شما :
+                                    </span>
+                                    <strong>{{ user.phone }}</strong>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/translator/edit-profile" class="btn btn-success btn-block profile-edit-btn">
+                                    <i class="icon-note"></i>
+                                    بروزرسانی
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card ticket-card">
+                            <div class="card-header f-1rem ">
+                                <div class="card-header__title">
+                                    <i class="icon-earphones-alt"></i>
+                                    <span>پیام های اخیر</span>
+                                </div>
+                                <button data-toggle="modal" data-target="#newMessageModal" class="btn new-ticket-btn">
+                                    <i class="icon-plus"></i>
+                                    ارسال پیام جدید
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group ticket-list">
+                                    {% if lastMessages %}
+                                        {% for ticket in lastMessages %}
+                                            <a class="list-group-item ticket-item" href="/translator/ticket/view/{{ticket.ticket_number}}">
+                                                <div class="ticket-item__details">
+                                                    <span class="ticket-item__code">#{{ticket.ticket_number}}</span>
+                                                    -
+                                                    <span class="ticket-item__title">
+                                                        {{ticket.subject}}</span>
+                                                    {% if ticket.state == 'read' %}
+                                                        <span class="ticket-item__status bg-primary ">خوانده شده</span>
+                                                    {% endif %}
+                                                    {% if ticket.state == 'unread' %}
+                                                        <span class="ticket-item__status bg-danger">خوانده نشده</span>
+                                                    {% endif %}
+                                                    {% if ticket.state=='answered' %}
+                                                        <span class="ticket-item__status answered">پاسخ داده شده</span>
+                                                    {% endif %}
+                                                    {% if ticket.state == 'waiting' %}
+                                                        <span class="ticket-item__status not-answered">درانتظار پاسخ</span>
+                                                    {% endif %}
+                                                </div>
+                                                <p>
+                                                    آخرین بروزرسانی
+                                                    {{ticket.update_date_persian}}
+                                                </p>
+                                            </a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <h6 class="text-center p-3">تاکنون پیامی ارسال نکرده اید !</h6>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="icon-phone"></i>
+                                تماس با ما
+                            </div>
+                            <div class="card-body">
+                                <ul class="contact-info">
+                                    <li class="contact-info__item">
+                                        <i class="icon-location-pin"></i>
+                                        میدان انقلاب ابتدای کارگر شمالی کوچه رستم پ ۲۱ و ۸
+                                    </li>
+                                    <li class="contact-info__item">
+                                        <i class="icon-phone"></i>
+                                        ٠٩٣٠٩٥٨٩١٢٢ - 66496035_021
+                                    </li>
+                                    <li class="contact-info__item">
+                                        <a href="mailto: Motarjem1@yahoo.com">
+                                            Motarjem1@yahoo.com</a>
+                                        <i class="icon-envelope"></i>
+                                    </li>
+                                </ul>
+                                <h6 class="text-center">مارا در شبکه های اجتماعی دنبال کنید</h6>
+                                <div class="contact-info__social-media">
+                                    <a class="icon-social-instagram" href="https://instagram.com/motarjemone"></a>
+                                    <a class="icon-social-linkedin" href="https://www.linkedin.com/in/motarjem-one"></a>
+                                    <a class="icon-social-twitter" href="https://twitter.com/MOTARJEM11"></a>
+                                    <a class="icon-paper-plane" href="https://telegram.me/joinchat/AAAAAENnLiWdB6XvCvuB5w"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="mt-3 mb-4">سفارشات جدید</h4>
+                                <table class="table newOrderTable is--responsive">
+                                    {% if new_orders %}
+
+                                        <thead>
+                                            <th class="text-center" scope="col">#</th>
+                                            <th class="text-center" scope="col">تعداد صفحات</th>
+                                            <th class="text-center" scope="col">زبان ترجمه</th>
+                                            <th class="text-center" scope="col">رشته</th>
+                                            <th class="text-center" scope="col">کیفیت ترجمه</th>
+                                            <th class="text-center" scope="col">هزینه ترجمه</th>
+                                            <th class="text-center" scope="col">سهم شما</th>
+                                            <th class="text-center" scope="col">عملیات</th>
+                                        </thead>
+                                        <tbody id="newOrdersWrap">
+                                            {% for order in new_orders %}
+                                                <tr>
+                                                    <td data-label="شماره سفارش">{{order.order_number}}</td>
+                                                    <td data-label="تعداد صفحات">{{order.word_numbers / 250 | round(0,'ceil') }}</td>
+                                                    <td data-label="زبان ترجمه">
+                                                        {{order.translation_lang == "1"? "انگلیسی به فارسی": "فارسی به انگلیسی"}}
+                                                    </td>
+                                                    <td data-label="رشته">
+                                                        {{order.study_field}}
+                                                    </td>
+                                                    <td data-label="کیفیت ترجمه">
+                                                        {{ order.translation_quality == "5" ? "نقره ای" : "طلایی" }}
+                                                    </td>
+
+                                                    <td data-label="هزینه ترجمه">{{order.order_price |number_format}}
+                                                        تومان</td>
+                                                    <td data-label="سهم شما">{{ ((order.order_price*70)/100 | round(0,'ceil')) |number_format }}
+                                                        تومان</td>
+                                                    <td data-label="عملیات" class="order-actions">
+                                                        <button onclick="showOrderInfo('{{order.order_number}}')" class="expand-button order-action is--primary is--medium">
+                                                            <span data-hover="جزییات سفارش">
+                                                                <i class="icon-info"></i>
+                                                            </span>
+                                                        </button>
+                                                        <button onclick="acceptOrder('{{order.order_number}}','{{user.user_id}}')" class="expand-button order-action is--success is--large">
+                                                            <span data-hover="درخواست انجام سفارش">
+                                                                <i class="icon-check"></i>
+                                                            </span>
+                                                        </button>
+                                                        <button onclick="declineOrder('{{order.order_number}}','{{user.user_id}}')" class="expand-button order-action is--danger">
+                                                            <span data-hover="رد سفارش">
+                                                                <i class="icon-close"></i>
+                                                            </span>
+                                                        </button>
+
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+
+                                    {% else %}
+                                        <h5 class="text-center">پروژه جدیدی یافت نشد !</h5>
+                                    {% endif %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            {% if user.is_denied %}
+                    <div class="card">
+                        <div style="height:550px" class="card-body d-flex flex-d-column align-items-center justify-content-center">
+                            <h4 class="mb-4">متاسفانه شما توسط ادمین تایید نشده اید :(</h4>
+                            <h5 class="mb-4">ممنون از اینکه مترجم وان را انتخاب کردید </h5>
+                        </div>
+                    </div>
+            {% else %}
+                {% if has_tested %}
+                    <div class="card">
+                        <div style="height:550px" class="card-body d-flex flex-d-column align-items-center justify-content-center">
+                            <h4 class="mb-4">شما قبلا آزمون داده اید</h4>
+                            <h5 class="mb-4">آزمون شما برای ادمین ارسال شده است . لطفا منتظر تایید ادمین باشید</h5>
+                            <h6>باتشکر</h6>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="mt-2 mb-4">آزمون ورودی مترجم وان</h4>
+
+                            <h5 class="mt-5 mb-4">مترجم عزیز به بخش آزمون مترجم وان خوش آمدید . لطفا به نکات زیر توجه فرمایید</h5>
+                            <ul class="test-notes">
+                                <li>برای اینکه ثبت نام شما کامل شود باید یک متن را انتخاب کرده و آن را ترجمه کنید</li>
+                                <li>سعی کنید در زمان تعیین شده کل متن را ترجمه کنید چراکه زمان تغییر نخواهد کرد</li>
+                                <li>بعد از ترجمه دکمه ارسال ترجمه را کلیک کنید تا ترجمه به ادمین ارسال شود</li>
+                                <li>تا زمانی که ادمین ترجمه شما را تایید نکند شما قادر به استفاده از امکانات کامل پنل نخواهید بود</li>
+                            </ul>
+                            <p style="color: #ff4646;font-size: 1rem;">موفق باشید !</p>
+
+                            <hr style="margin-top: 2rem;margin-bottom: 1rem;border: 1px solid #eee;">
+
+                            <form method="POST" id="testFilterForm" class="form row">
+                                <div class="form-group col-md-3 offset-md-2">
+                                    <label for="language">زبان ترجمه</label>
+                                    <select id="language" name="language" class="form-control">
+                                        <option value="1">انگلیسی به فارسی</option>
+                                        <option value="2">فارسی به انگلیسی</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="study_field">رشته دانشگاهی</label>
+                                    <select id="study_field" name="study_field" class="form-control">
+                                        {% for study_field in study_fields %}
+                                            <option value="{{study_field.id}}">{{study_field.title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3 d-flex align-items-center mt-2">
+                                    <input type="submit" value="جستجو" class="btn btn-primary">
+                                </div>
+                            </form>
+                            <div class="test-logs mt-4 d-flex justify-content-center"></div>
+                            <div class="test-section row"></div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </main>
+    <!-- Modal -->
+    <div class="modal fade" id="newMessageModal" tabindex="-1" role="dialog" aria-labelledby="newMessageModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newMessageModalLabel">ارسال پیام</h5>
+                </div>
+                <div class="modal-body">
+                    <form action="/translator/ticket/send" id="sendMessageForm" method="POST">
+                        <input type="hidden" name="msg_id" id="msg_id"/>
+                        <div class="row">
+                            <div class="form-group col-md-3">
+                                <label for="">نام شما</label>
+                                <input class="form-control" type="text" value="{{user.fname ~ " " ~ user.lname}}" disabled="disabled"/>
+                            </div>
+                            <div class="form-group col-md-5">
+                                <label for="">ایمیل شما</label>
+                                <input class="form-control" type="email" value="{{ user.email }}" disabled="disabled"/>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="">عنوان پیام</label>
+                                <input class="form-control" type="text" id="subject" name="subject"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="">پیام شما</label>
+                            <textarea name="body" id="medium-editor" cols="30" rows="10"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="send-message-btn">
+                            ارسال
+                        </button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">
+                            انصراف
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="orderDetailsModalLabel">اطلاعات سفارش</h5>
+                    {# <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button> #}
+                </div>
+                <div class="modal-body" id="orderDetailsWrap" style="padding:2rem"></div>
+                <div class="modal-footer justify-content-start">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Request Checkout Modal -->
+    <div aria-hidden="true" aria-labelledby="requestCheckoutModalLabel" class="modal fade" id="requestCheckoutModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="requestCheckoutModalLabel">
+                        درخواست برداشت وجه
+                    </h5>
+                    {#
+                                                <button
+                                                  type="button"
+                                                  class="close"
+                                                  data-dismiss="modal"
+                                                  aria-label="Close"
+                                                >
+                                                  <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                #}
+                </div>
+                <div class="modal-body" style="padding:2rem">
+                    <form action="/translator/account/checkout-request" id="requestCheckoutForm" method="post">
+                                <div class="row">
+                                    <div class="col-md-7 offset-md-1">
+                                        <div class="form-group">
+                                            <label for="amount">مبلغ درخواستی (تومان)</label>
+                                            <input class="form-control ltr f-1rem font-weight-bold" id="amount" name="amount" type="text"/>
+                                        </div>
+                                        <span class='amount-hint'></span>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-center pt-3">
+                                        <input class="btn btn-success" type="submit" value="ارسال"/>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer justify-content-start">
+                            <button class="btn btn-secondary" data-dismiss="modal" type="button">
+                                بستن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}
+{% block script_below %}
+    <script src="/public/js/panel/medium-editor.min.js"></script>
+    <script src="/public/js/sweetalert2@8.js"></script>
+    <script src="/public/js/panel/translator_dashboard.js"></script>
+{% endblock %}

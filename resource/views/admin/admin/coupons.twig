@@ -1,0 +1,260 @@
+{% extends 'admin/layout/admin.twig' %}
+
+{% block content %}
+    <main class="main">
+        <div class="card">
+            <div class="card-body" style="min-height: 550px">
+                <div class="d-flex justify-content-between mt-3">
+                    <h4>مدیریت کدهای تخفیف</h4>
+                    <button class="btn btn-primary" onclick="openNewCouponModal()">
+                        <i class="icon-plus"></i>
+                        کد تخفیف جدید
+                    </button>
+                </div>
+                <table class="table OrdersTable is--responsive">
+                    <thead>
+                    <tr>
+                        <th class="bg-teal-dark text-center">کد تخفیف</th>
+                        <th class="bg-teal-dark text-center">نوع تخفیف</th>
+                        <th class="bg-teal-dark text-center">درصد تخفیف</th>
+                        <th class="bg-teal-dark text-center">میزان تخفیف</th>
+                        <th class="bg-teal-dark text-center">حداقل مبلغ برای اعمال تخفیف</th>
+                        <th class="bg-teal-dark text-center">عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody >
+                    {% for coupon in coupons %}
+                        <tr>
+                            <td data-label="کد تخفیف">
+                                {{coupon.coupon_code}}
+                            </td>
+                            <td data-label="نوع تخفیف">
+                                {{coupon.is_percent_based == "1" ? "درصدی":"کاهش مبلغ"}}
+                            </td>
+                            <td data-label="درصد تخفیف">
+                                {{ coupon.discount_percent == "0" ? "مشخص نشده":coupon.discount_percent ~ " " ~ "٪" }}
+                            </td>
+                            <td data-label="میزان تخفیف">
+                                {{ coupon.discount_price =="0" ? "مشخص نشده" : coupon.discount_price | number_format ~ " " ~ "تومان" }}
+                            </td>
+                            <td data-label="حداقل مبلغ برای اعمال تخفیف">
+                                {{ coupon.min_price | number_format }} تومان
+                            </td>
+                            <td data-label="عملیات" >
+                                <button class="btn btn-danger" onclick="deleteCoupon('{{ coupon.id }}')">
+                                    <i class="icon-trash"></i>
+                                    حذف کد تخفیف
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% include 'admin/includes/pagination.twig' with { 'count' :coupons_count, 'current_page' :current_page, 'base_path' :'/admin/coupon-management', 'offset' : 10, 'visible_numbers' : 3 } %}
+
+            </div>
+        </div>
+    </main>
+    <!-- New Coupon Modal -->
+    <div aria-hidden="true" aria-labelledby="newCouponModalLabel" class="modal fade" id="newCouponModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="newCouponModalLabel">اضافه کردن کد تخفیف جدید</h5>
+                    {# <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button> #}
+                </div>
+                <div class="modal-body" >
+                    <form id="newCouponForm" action="/admin/coupon/new" method="post" class="row">
+                        <div class="form-group col-lg-4">
+                            <label for="coupon_code">کد تخفیف</label>
+                            <input type="text" class="form-control ltr" name="coupon_code" id="coupon_code">
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label for="discount_type">نوع تخفیف</label>
+                            <select name="is_percent_based" id="discount_type" class="form-control">
+                                <option value="1" selected>درصدی</option>
+                                <option value="0">کسر مبلغ</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label for="discount_percent">درصد تخفیف</label>
+                            <input type="text" class="form-control ltr" name="discount_percent" id="discount_percent">
+                        </div>
+                        <div class="form-group col-lg-4 d-none">
+                            <label for="discount_price">میزان تخفیف (به تومان)</label>
+                            <input type="text" class="form-control ltr" name="discount_price" id="discount_price">
+                        </div>
+                        <div class="form-group col-lg-8">
+                            <label for="min_price">حداقل مبلغ مورد نیاز برای اعمال تخفیف</label>
+                            <input type="text" class="form-control" name="min_price" id="min_price" placeholder="اگر خالی بماند هر قیمتی پذیرفته می شود">
+                        </div>
+                        <div class="form-group col-lg-4  d-inline-flex align-items-center pt-4">
+                            <input type="submit" class="btn btn-success" value="ذخیره">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-start">
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">بستن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script_below %}
+    <script src="/public/js/sweetalert2@8.js"></script>
+    <script>
+        function openNewCouponModal() {
+            $("#newCouponModal").modal("show");
+        }
+        function deleteCoupon(couponId) {
+            Swal.fire({
+                title: 'آیا مطمینید ؟',
+                text: "آیا می خواهید این کد تخفیف را حذف کنید ؟",
+                type: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله',
+                cancelButtonText:'نه'
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        type:"DELETE",
+                        url:"/admin/coupon/"+couponId,
+                        success:function(data,status){
+
+                            if(data.status){
+                                Swal.fire({
+                                    title: 'موفق !',
+                                    text: "کد تخفیف با موفقیت حذف شد !",
+                                    type: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'باشه'
+                                }).then(function(result){
+                                    if (result.value) {
+                                        window.location.reload();
+                                    }
+                                })
+                            }else{
+                                console.log(data.message);
+                                Swal.fire(
+                                    'خطا !',
+                                    'خطایی در حذف کد تخفیف رخ داد !',
+                                    'error'
+                                )
+                            }
+                        }
+                    })
+                }else{
+
+                }
+            })
+
+        }
+        function validateInputs(){
+            const code=$("#coupon_code");
+            const type=$("#discount_type");
+            let validationIsGood=true;
+            let discount="";
+            if (type.val() == "1"){
+                discount=$("#discount_percent");
+            } else{
+                discount=$("#discount_price");
+            }
+            if (code.val() == ""){
+                code.addClass("not-valid");
+                code.parent().append("<p class='validation-error'>این فیلد نباید خالی باشد !</p>");
+                validationIsGood=false;
+            }
+            if (discount.val() == ""){
+                discount.addClass("not-valid");
+                discount.parent().append("<p class='validation-error'>این فیلد نباید خالی باشد !</p>");
+                validationIsGood=false;
+            }
+            return validationIsGood;
+        }
+        $(document).ready(function (e) {
+           $("#newCouponForm").on("submit",function (e) {
+               e.preventDefault();
+               let validationIsGood=validateInputs();
+                if (validationIsGood){
+                    $.ajax({
+                        type: "POST",
+                        url: $(this).attr("action"),
+                        data: $(this).serialize(),
+                        success: function (data, status) {
+                            if (data.status){
+                                Swal.fire({
+                                    title: 'موفق !',
+                                    text: "کد تخفیف با موفقیت ذخیره شد !",
+                                    type: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'باشه'
+                                }).then(function(result){
+                                    if (result.value) {
+                                        window.location.reload();
+                                    }
+                                })
+                            }else{
+                                console.log(data.message);
+                                Swal.fire(
+                                    'خطا !',
+                                    "خطایی در ذخیره کد تخفیف رخ داد",
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+           });
+            $("#discount_type").on("change",function (e) {
+
+                if ($(this).val() === "1"){
+                    $("#discount_percent").parent().removeClass("d-none");
+                    $("#discount_price").parent().addClass("d-none");
+                } else{
+                    $("#discount_percent").parent().addClass("d-none");
+                    $("#discount_price").parent().removeClass("d-none");
+                }
+            })
+            $("#min_price").on("focus",function () {
+                $(this).addClass("ltr");
+            })
+            $("#min_price").blur(function () {
+                $(this).removeClass("ltr");
+            })
+            $("#coupon_code").blur(function (e) {
+                if ($(this).val() == ""){
+                    $(this).addClass("not-valid");
+                    $(this).parent().append("<p class='validation-error'>این فیلد نباید خالی باشد !</p>");
+                } else{
+                    $(this).removeClass("not-valid");
+                    $(this).parent().find(".validation-error").eq(0).remove();
+                }
+            });
+            $("#discount_price").blur(function (e) {
+                if ($(this).val() == ""){
+                    $(this).addClass("not-valid");
+                    $(this).parent().append("<p class='validation-error'>این فیلد نباید خالی باشد !</p>");
+                } else{
+                    $(this).removeClass("not-valid");
+                    $(this).parent().find(".validation-error").eq(0).remove();
+                }
+            });
+            $("#discount_percent").blur(function (e) {
+                if ($(this).val() == ""){
+                    $(this).addClass("not-valid");
+                    $(this).parent().append("<p class='validation-error'>این فیلد نباید خالی باشد !</p>");
+                } else{
+                    $(this).removeClass("not-valid");
+                    $(this).parent().find(".validation-error").eq(0).remove();
+                }
+            });
+        });
+    </script>
+{% endblock %}

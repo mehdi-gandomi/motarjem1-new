@@ -1,0 +1,307 @@
+{% extends 'admin/layout/translator.twig' %}
+{% block content %}
+    <main class="main" style="min-height:550px">
+        <div class="card">
+            <div class="card-body container">
+                <h4 class="text-center mt-3">گزارش حساب شما</h4>
+                <div class="info-cards ">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="info-card is--revenue">
+                                <div class="info-card__icon bg-primary">
+                                    <img alt="revenue" src="/public/images/icon/income.svg"/>
+                                </div>
+                                <div class="info-card__content">
+                                    <div class="info-card__content__title">
+                                        میزان درآمد شما تا کنون
+                                    </div>
+                                    <div class="info-card__content__value">
+                                        {{ revenue ? revenue : 0 }}
+                                        <span class="f-1rem ml-2">تومان</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card is--balance">
+                                <div class="info-card__icon bg-purple">
+                                    <img alt="" src="/public/images/icon/wallet.svg"/>
+                                </div>
+                                <div class="info-card__content">
+                                    <div class="info-card__content__title">
+                                        میزان اعتبار حساب شما
+                                    </div>
+                                    <div class="info-card__content__value">
+                                        {{ account_balance ? account_balance : 0 }}
+                                        <span class="f-1rem ml-1">تومان</span>
+                                    </div>
+                                    <div class="info-card__content__link">
+                                        <a class="request-checkout" data-target="#requestCheckoutModal" data-toggle="modal">درخواست پرداخت وجه</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card is--checkout">
+                                <div class="info-card__icon bg-success">
+                                    <img alt="" src="/public/images/icon/atm.svg"/>
+                                </div>
+                                <div class="info-card__content">
+                                    <div class="info-card__content__title">
+                                        میزان برداشتی شما تا کنون
+                                    </div>
+                                    <div class="info-card__content__value">
+                                        {{ total_checkouts ? total_checkouts : 0 }}
+                                        <span class="f-1rem">تومان</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="text-center mt-5">پروژه های تکمیل شده توسط شما</h4>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table is--responsive" id="orders-table">
+                            <thead>
+                                <tr>
+                                    <th class="bg-teal-dark" scope="col">#</th>
+                                    <th class="bg-teal-dark" scope="col">زبان ترجمه</th>
+                                    <th class="bg-teal-dark" scope="col">کیفیت ترجمه</th>
+                                    <th class="bg-teal-dark" scope="col">هزینه ترجمه</th>
+                                    <th class="bg-teal-dark" scope="col">سهم شما</th>
+                                    <th class="bg-teal-dark" scope="col">جزییات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-orders">
+                                {% if completed_orders %}
+                                    {% for order in completed_orders %}
+                                        {%
+              set page_number = order.word_numbers / 250 | round(0,'ceil') %}
+                                        <tr>
+                                            <td data-label="شماره سفارش">
+                                                {{ order.order_number }}
+                                            </td>
+                                            <td data-label="زبان ترجمه">
+                                                {{
+                    order.translation_lang == "1"
+                      ? "انگلیسی به فارسی"
+                      : "فارسی به انگلیسی"
+                  }}
+                                            </td>
+                                            <td data-label="کیفیت ترجمه">
+                                                {{ order.translation_quality == "5" ? "نقره ای" : "طلایی" }}
+                                            </td>
+                                            <td data-label="هزینه ترجمه">
+                                                {{ order.order_price | number_format }}
+                                                تومان
+                                            </td>
+                                            <td data-label="سهم شما">
+                                                {{ ((order.order_price*70)/100 | round(0,'ceil')) | number_format }}
+                                            </td>
+                                            <td class="order-more-info" data-label="جزییات">
+                                                <a onclick="showOrderInfo('{{ order.order_number }}')">
+                                                    <svg height="23px" viewBox="0 0 50 80" width="13px" xml:space="preserve">
+                                                        <polyline fill="none" points="45.63,75.8 0.375,38.087 45.63,0.375 " stroke-linecap="round" stroke-linejoin="round" stroke-width="10" stroke="#a9a9a9"></polyline>
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="6">
+                                            <h5 class="text-center">
+                                                شما تاکنون پروژه ای را به اتمام نرسانده اید !
+                                            </h5>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        {% include 'admin/includes/pagination.twig' with { 'count' :
+          completed_orders_count, 'page_prefix':'order_', 'current_page' :
+          completed_orders_current_page, 'base_path' :
+          '/translator/account-report', 'offset' : 10, 'visible_numbers' : 3 }
+          %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5 row">
+                        <div class="col-12">
+                            <h4 class="text-center mt-4">درخواست های برداشت شما</h4>
+                        </div>
+                        <div class="col-12 checkout-requests-wrap">
+                            <table class="table is--responsive" id="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th class="bg-teal-dark" scope="col">#</th>
+                                        <th class="bg-teal-dark" scope="col">مبلغ درخواستی</th>
+                                        <th class="bg-teal-dark" scope="col">تاریخ درخواست</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-checkout-requests">
+                                    {% if checkoutـrequest_logs %}
+                                        {% for log in checkoutـrequest_logs %}
+                                            <tr>
+                                                <td data-label="ردیف">
+                                                    {{ log.id }}
+                                                </td>
+                                                <td data-label="مبلغ درخواستی">
+                                                    {{ log.amount }}
+                                                </td>
+                                                <td data-label="تاریخ درخواست">
+                                                    {{ log.request_date_persian }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="5">
+                                                <h5 class="text-center">
+                                                    تاکنون درخواستی نداشته اید !
+                                                </h5>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            {% include 'admin/includes/pagination.twig' with { 'count' :
+            checkoutـrequest_logs_count, 'page_prefix':'checkout_request_',
+            'current_page' : checkoutـrequest_logs_current_page, 'base_path' :
+            '/translator/account-report', 'offset' : 10, 'visible_numbers' : 3 }
+            %}
+                        </div>
+                    </div>
+                    <div class="col-md-7 row">
+                        <div class="col-12">
+                            <h4 class="text-center mt-4">برداشتی های شما</h4>
+                        </div>
+                        <div class="col-12">
+                            <table class="table is--responsive" id="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th class="bg-teal-dark" scope="col">#</th>
+                                        <th class="bg-teal-dark" scope="col">مبلغ پرداخت شده</th>
+                                        <th class="bg-teal-dark" scope="col">تاریخ درخواست</th>
+                                        <th class="bg-teal-dark" scope="col">تاریخ واریز</th>
+                                        <th class="bg-teal-dark" scope="col">شماره پیگیری</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-orders">
+                                    {% if checkout_logs %}
+                                        {% for log in checkout_logs %}
+                                            <tr>
+                                                <td data-label="ردیف">
+                                                    {{ log.id }}
+                                                </td>
+                                                <td data-label="مبلغ پرداخت شده">
+                                                    {{ log.amount }}
+                                                </td>
+                                                <td data-label="تاریخ درخواست">
+                                                    {{ log.request_date_persian }}
+                                                </td>
+                                                <td data-label="تاریخ واریز">
+                                                    {{ log.payment_date_persian }}
+                                                </td>
+                                                <td data-label="شماره پیگیری">
+                                                    {{ log.refer_code }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="5">
+                                                <h5 class="text-center">
+                                                    تاکنون برداشتی از حسابتان نداشته اید !
+                                                </h5>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            {% include 'admin/includes/pagination.twig' with { 'count' :
+            checkouts_count, 'page_prefix':'checkout_', 'current_page' :
+            checkouts_current_page, 'base_path' : '/translator/account-report',
+            'offset' : 10, 'visible_numbers' : 3 } %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Modal -->
+    <div aria-hidden="true" aria-labelledby="orderDetailsModalLabel" class="modal fade" id="orderDetailsModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="orderDetailsModalLabel">اطلاعات سفارش</h5>
+                    {#
+                                                <button
+                                                  type="button"
+                                                  class="close"
+                                                  data-dismiss="modal"
+                                                  aria-label="Close"
+                                                >
+                                                  <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                #}
+                </div>
+                <div class="modal-body" id="orderDetailsWrap" style="padding:2rem"></div>
+                <div class="modal-footer justify-content-start">
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">
+                        بستن
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Request Checkout Modal -->
+    <div aria-hidden="true" aria-labelledby="requestCheckoutModalLabel" class="modal fade" id="requestCheckoutModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="requestCheckoutModalLabel">
+                        درخواست برداشت وجه
+                    </h5>
+                    {#
+                                                <button
+                                                  type="button"
+                                                  class="close"
+                                                  data-dismiss="modal"
+                                                  aria-label="Close"
+                                                >
+                                                  <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                #}
+                </div>
+                <div class="modal-body" style="padding:2rem">
+                    <form action="/translator/account/checkout-request" id="requestCheckoutForm" method="post">
+                                <div class="row">
+                                    <div class="col-md-7 offset-md-1">
+                                        <div class="form-group">
+                                            <label for="amount">مبلغ درخواستی (تومان)</label>
+                                            <input class="form-control ltr f-1rem font-weight-bold" id="amount" name="amount" type="text"/>
+                                        </div>
+                                        <span class='amount-hint'></span>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-center pt-3">
+                                        <input class="btn btn-success" type="submit" value="ارسال"/>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer justify-content-start">
+                            <button class="btn btn-secondary" data-dismiss="modal" type="button">
+                                بستن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+        {% block script_below %}
+            <script src="/public/js/sweetalert2@8.js"></script>
+            <script src="/public/js/panel/translator-account-report.js"></script>
+        {% endblock %}
+    

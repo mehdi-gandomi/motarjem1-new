@@ -1,0 +1,138 @@
+//SIDEBAR profile avatar styles
+.profile-avatar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 1rem auto 0.8rem auto;
+    &__avatar{
+        width: 64px;
+        height: 64px;
+        border: 2px solid #eee;
+        border-radius: 50%;
+        padding: 0.3rem;
+        img{
+            border-radius: 50%;
+            max-width: 100%;
+            max-height: 100%;
+        }
+    }
+    &__text{
+        padding: 1.3rem 0.5rem 0 0;
+        p{
+            color: #eee;
+            font-size:0.7rem;
+        }
+    }
+}
+
+//responsiveness for profile avatar
+//change style of avatar for minimized sidebar
+.sidebar-minimized{
+    .profile-avatar {
+        &__avatar{
+            width: 40px;
+            height: 40px;
+        }
+        &__text{
+            display: none;
+        }
+    }
+
+}
+
+//side bar custom styles
+.text-placeholder{
+    width: 80%;
+    height: 9px;
+    background: #5a5a5a;
+    display: inline-block;
+    border-radius: 5px;
+}
+.nav-item.disabled .nav-link{
+    cursor: not-allowed;
+    &:hover{
+        background: rgba(0,0,0,0) !important;
+    }
+}
+//responsive table styles
+@media screen and (max-width: 768px) {
+    table.is--responsive thead {
+      border: none;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+    
+    table.is--responsive tr {
+      border-bottom: 3px solid #ddd;
+      display: block;
+    }
+    
+    table.is--responsive td {
+      border-bottom: 1px solid #ddd;
+      display: block;
+      text-align: left !important;
+    }
+    
+    table.is--responsive td::before {
+      content: attr(data-label);
+      float: right;
+    }
+  }
+
+.user-info{
+    &__avatar{
+        width: 120px;
+        height: 120px;
+        margin:1rem auto;
+        img{
+            max-width: 100%;
+            max-height: 100%;
+            border-radius:50%;
+        }
+    }
+    &__info{
+        &__item{
+            text-align:center;
+        }
+    }
+}
+
+//my utitities 
+.f-1rem{
+    font-size: 1rem !important;
+}
+.no-pad{
+    padding: 0 !important;
+}
+
+.bg-purple{
+    background: #ae58ff !important
+}
+.bg-dark-purple{
+    background: #9458ce !important;
+}
+.bg-dark-yellow{
+    background: #cab945 !important;
+}
+.bg-dark-teal{
+    background: #0092bd !important
+}
+.flex-d-column{
+    flex-direction: column !important;
+}
+.avatar-in-table{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    &.lightbox-enabled{
+     &:hover{
+        cursor: zoom-in;
+        filter: brightness(0.7);
+     }   
+    }
+}

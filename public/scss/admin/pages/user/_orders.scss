@@ -1,0 +1,140 @@
+//filter checkboxes styles
+.label-cbx {
+    user-select: none;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.label-cbx input:checked+.checkbox {
+    border-color: #20C2E0;
+}
+
+.label-cbx input:checked+.checkbox svg path {
+    fill: #20C2E0;
+}
+
+.label-cbx input:checked+.checkbox svg polyline {
+    stroke-dashoffset: 0;
+}
+
+.label-cbx:hover .checkbox svg path {
+    stroke-dashoffset: 0;
+}
+
+.label-cbx .checkbox {
+    position: relative;
+    top: 2px;
+    float: right;
+    margin-left: 8px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #C8CCD4;
+    border-radius: 3px;
+}
+
+.label-cbx .checkbox svg {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+}
+
+.label-cbx .checkbox svg path {
+    fill: none;
+    stroke: #20C2E0;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 71px;
+    stroke-dashoffset: 71px;
+    transition: all 0.6s ease;
+}
+
+.label-cbx .checkbox svg polyline {
+    fill: none;
+    stroke: #FFF;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 18px;
+    stroke-dashoffset: 18px;
+    transition: all 0.3s ease;
+}
+
+.label-cbx>span {
+    pointer-events: none;
+    vertical-align: middle;
+}
+
+.cntr {
+    position: absolute;
+    top: 45%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.invisible {
+    position: absolute;
+    z-index: -1;
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+.orders-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+} //table filter section
+.table-filter {
+    margin-top: 2rem;
+    label {
+        margin: 0 0.5rem;
+    }
+} //orders table styles
+#orders-table,
+#messages-table,
+.OrdersTable {
+    position: relative !important;
+    margin-top: 2rem;
+    tbody {
+        tr:hover {
+            .order-more-info {
+                background: #eadede;
+            }
+        }
+        td {
+            vertical-align: middle;
+            text-align: center;
+            height: 100px;
+            border: 1px solid #ebebeb;
+        }
+    }
+}
+
+.table {
+    th.bg-teal-dark {
+        background: #85b3be;
+        color: #fff;
+    }
+}
+
+//pagination section styles
+.page-navigation {
+    margin: 3rem -35px 0 0;
+} // more info arrow styles
+.order-more-info {
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    position: relative;
+    a {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

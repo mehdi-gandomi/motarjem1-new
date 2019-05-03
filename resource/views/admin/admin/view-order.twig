@@ -1,0 +1,258 @@
+{% extends "admin/layout/admin.twig" %}
+{% block style_below %}
+    <style media="print">
+        .title-section {
+            display: block;
+        }
+        .title-section h3 {
+            text-align: center;
+        }
+        .title-section .btn {
+            display: none;
+        }
+    </style>
+    <style>
+        .button {
+            padding: 0.375rem 0.75rem;
+            text-align: center;
+            border-radius: 8px;
+            display: inline-block;
+            vertical-align: middle;
+            border: 0;
+            cursor: pointer;
+        }
+        .button.has--lighter-shadow {
+            box-shadow: 0 0 1.5px rgba(0,0,0,.19), 0 1.3px 0 rgba(0,0,0,.23);
+        }
+        .button:active,
+        .button:focus,
+        .button:hover {
+            text-decoration: none;
+            outline: none;
+        }
+    </style>
+    <link rel="stylesheet" href="/public/css/order-result.css">
+{% endblock %}
+{% block content %}
+    {# START declaring
+variables based on db info #}
+    {% if delivery_type == '1' %}
+        {% set
+        delivery_type_text = "معمولی" %}
+    {% endif %}
+    {% if delivery_type == '2' %}
+        {% set delivery_type_text = "نیمه فوری" %}
+    {% endif %}
+    {% if delivery_type == '3' %}
+        {% set delivery_type_text = "فوری" %}
+    {% endif %}
+    {# END declaring variables
+based on db info #}
+
+    <main class="main">
+        <div class="card">
+            <div class="card-body">
+                {% if found %}
+                
+                    <div class="title-section mb-5 mt-3 ">
+                    <h3 class="text-center">جزییات سفارش</h3>
+                    <div>
+                        <button class="btn btn-success" onclick="window.print()">
+                            <i class="icon-printer"></i>
+                            پرینت
+                        </button>
+                    </div>
+                </div>
+                <div class="order-details row">
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            شماره سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ order_number }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            شماره تراکنش
+                        </div>
+                        <div class="order-details__detail__value">
+                                {{ transaction_code }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            تعداد صفحات
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ word_numbers / 250 }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            زبان ترجمه
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{translation_lang == "1" ? "انگلیسی به فارسی" : "فارسی به انگلیسی"}}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            کیفیت ترجمه
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ translation_quality == "5" ? "نقره ای" : "طلایی" }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-2">
+                        <div class="order-details__detail__label">
+                            نوع ترجمه
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{translation_kind == '1' ? "عمومی":"تخصصی"}}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            رشته تخصصی
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ study_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            زمان تحویل
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ delivery_type_text }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            زمان تحویل به روز
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ delivery_days }}
+                            روز
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            تاریخ ثبت سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ order_date_persian }}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            تاریخ تایید سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ accept_date_persian}}
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            سفارش دهنده
+                        </div>
+                        <div class="order-details__detail__value">
+                            <a onclick="showOrdererInfo('{{ orderer_id }}')" style="cursor:pointer;color:#20a8d8">{{orderer_fname ~ " " ~ orderer_lname}}</a>    
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            مترجم
+                        </div>
+                        <div class="order-details__detail__value">
+                            <a onclick="showTranslatorInfo('{{ translator_id }}')" style="cursor:pointer;color:#20a8d8">{{translator_fname ~ " " ~ translator_lname}}</a>    
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            کد تخفیف
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ discount_code ? discount_code:"استفاده نشده" }}
+
+                        </div>
+                    </div>
+                    {% if discount_code %}
+                        <div class="order-details__detail col-md-3">
+                            <div class="order-details__detail__label">
+                                قیمت سفارش بدون تخفیف
+                            </div>
+                            <div class="order-details__detail__value">
+                                {{ price_without_discount | number_format}}
+                                تومان
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            قیمت کل سفارش
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ order_price | number_format }}
+                            تومان
+                        </div>
+                    </div>
+                    <div class="order-details__detail col-md-3">
+                        <div class="order-details__detail__label">
+                            سهم شما(با کسر سهم مترجم و مسعود مغربی)
+                        </div>
+                        <div class="order-details__detail__value">
+                            {{ ((order_price*15)/100 | round(0,'ceil')) |number_format }}
+                            تومان
+                        </div>
+                    </div>
+                    {% if order_files %}
+                        <div class="order-details__detail col-md-3">
+                            <div class="order-details__detail__label">
+                                فایل های سفارش
+                            </div>
+                            <div class="order-details__detail__value">
+                                {% for file in order_files %}
+                                    <a style='display:block' href='/public/uploads/order/{{file}}' download="{{file}}">{{file}}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if description %}
+                        <div class="order-details__detail col-md-10">
+                            <div class="order-details__detail__label">
+                                توضیحات
+                            </div>
+                            <div class="order-details__detail__value">
+                                {{ description }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                    <h3 class="text-center p-5">چنین سفارشی یافت نشد !</h3>
+                {% endif %}
+                
+            </div>
+        </div>
+    </main>
+
+   {# translator info modal #}
+    <!-- Modal -->
+    <div aria-hidden="true" aria-labelledby="InfoModalLabel" class="modal fade" id="infoModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="InfoLabel">اطلاعات مترجم</h5>
+                </div>
+                <div class="modal-body" id="infoWrap"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script_below %}
+    <script src="/public/js/panel/admin-view-order.js"></script>
+{% endblock %}
