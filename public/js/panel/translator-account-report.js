@@ -80,12 +80,21 @@ function showOrderInfo(orderNumber){
   }
   $("#requestCheckoutForm").on("submit",function(e){
     e.preventDefault();
-    if($("#amount").val()=="") {
+    var amount=$("#amount").val();
+    if(amount=="") {
         return Swal.fire(
             'خطا !',
             "فیلد مبلغ نباید خالی باشد !",
             'error'
           );
+    }
+    amount=amount.replace(/\,/,"");
+    if (amount < 20000){
+        return Swal.fire(
+            'خطا !',
+            "مبلغ درخواستی نمی تواند کمتر از 20 هزار تومان باشد !",
+            'error'
+        );
     }
     $.ajax({
         type:"POST",
