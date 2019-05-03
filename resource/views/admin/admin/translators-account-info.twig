@@ -6,10 +6,15 @@
         <div class="card" style="min-height: 550px">
             <div class="card-body">
                 <h4 class="mt-3 mb-3">اطلاعات حساب بانکی مترجمان</h4>
+                <div class="table-search mt-5">
+                    <div class="form-group">
+                        <input type="text" class="form-control light-table-filter" data-table="OrdersTable" placeholder="برای جستجو کلمه ای تایپ کنید...">
+                    </div>
+                </div>
                 <table class="table OrdersTable is--responsive">
                     <thead>
                     <tr>
-                        <th class="bg-teal-dark text-center">#</th>
+                        <th class="bg-teal-dark text-center">نام کاربری</th>
                         <th class="bg-teal-dark text-center">نام مترجم</th>
                         <th class="bg-teal-dark text-center">شماره کارت</th>
                         <th class="bg-teal-dark text-center">شماره شبا</th>
@@ -20,7 +25,7 @@
                         {% for info in infos %}
                             <tr>
                                 <td data-label="ردیف">
-                                    {{info.id}}
+                                    {{info.username}}
                                 </td>
                                 <td data-label="نام مترجم">
                                     <a title="اطلاعات مترجم" href="javascript:void(0)" aria-role="button"  onclick="showTranslatorInfo('{{info.translator_id}}')">{{info.translator_fname ~ " " ~ info.translator_lname}}</a>
@@ -77,4 +82,5 @@
             })
         }
     </script>
+    <script src="/public/js/tableFilter.js"> </script>
 {% endblock %}
