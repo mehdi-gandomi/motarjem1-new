@@ -10529,6 +10529,8 @@ textarea.form__input {
 }
 
 .choice-wrap .choice {
+  -webkit-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
   padding: 2rem;
   display: -webkit-box;
   display: -ms-flexbox;

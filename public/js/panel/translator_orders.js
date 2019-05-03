@@ -85,54 +85,65 @@ $("input[type=checkbox]").on("change",function(e){
 
 $("#completedOrderForm").on("submit",function (e) {
    e.preventDefault();
-   $this=$(this);
-    Swal.fire({
-        title: 'آیا مطمینید ؟',
-        text: "از کامل شدن ترجمه مطمین هستید ؟",
-        type: 'info',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'بله',
-        cancelButtonText:'نه'
-    }).then(function(result) {
-        if (result.value) {
-            $.ajax({
-                type:"POST",
-                url:$this.attr("action"),
-                data:$this.serialize(),
-                success:function(data,status){
+   var $this=$(this);
+   var $file=$("#uploaded-files");
+   if ($file.val() == ""){
+       Swal.fire({
+           title: 'خطا',
+           text: "باید حداقل یک فایل آپلود کنید !",
+           type: 'error',
+           confirmButtonText: 'باشه'
+       })
+   } else{
+       Swal.fire({
+           title: 'آیا مطمینید ؟',
+           text: "از کامل شدن ترجمه مطمین هستید ؟",
+           type: 'info',
+           showCancelButton: true,
+           confirmButtonColor: '#3085d6',
+           cancelButtonColor: '#d33',
+           confirmButtonText: 'بله',
+           cancelButtonText:'نه'
+       }).then(function(result) {
+           if (result.value) {
+               $.ajax({
+                   type:"POST",
+                   url:$this.attr("action"),
+                   data:$this.serialize(),
+                   success:function(data,status){
 
-                    if(data.status){
-                        Swal.fire({
-                            title: 'موفق !',
-                            text: "اطلاعات با موفقیت ذخیره شد !",
-                            type: 'success',
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'باشه'
-                        }).then(function(result){
-                            if (result.value) {
-                                window.location.reload();
-                            }
-                        })
-                    }else{
-                        Swal.fire(
-                            'خطا !',
-                            'خطایی در ثبت اطلاعات رخ داد',
-                            'error'
-                        )
-                    }
-                }
-            })
-        }else{
+                       if(data.status){
+                           Swal.fire({
+                               title: 'موفق !',
+                               text: "اطلاعات با موفقیت ذخیره شد !",
+                               type: 'success',
+                               confirmButtonColor: '#3085d6',
+                               cancelButtonColor: '#d33',
+                               confirmButtonText: 'باشه'
+                           }).then(function(result){
+                               if (result.value) {
+                                   window.location.reload();
+                               }
+                           })
+                       }else{
+                           Swal.fire(
+                               'خطا !',
+                               'خطایی در ثبت اطلاعات رخ داد',
+                               'error'
+                           )
+                       }
+                   }
+               })
+           }else{
 
-        }
-    })
+           }
+       })
+   }
 });
 
 function getOrdersFromApi(baseUrl,queryString){
     $.get(baseUrl+"/json"+queryString,function(data,status){
+        console.log(data.orders);
         renderOrders(data.orders);
         showPagination(data.orders_count,data.current_page,10,window.location.origin+window.location.pathname, queryString,3);
     })
@@ -162,9 +173,9 @@ function showOrderInfo(orderNumber){
         output+="<div class='order-details__detail col-md-3'><div class='order-details__detail__label'>نوع ترجمه</div><div class='order-details__detail__value'>"+translationKind+"</div></div>";
         output+="<div class='order-details__detail col-md-4'><div class='order-details__detail__label'>رشته دانشگاهی</div><div class='order-details__detail__value'>"+data.study_field+"</div></div>";
         output+="<div class='order-details__detail col-md-5'><div class='order-details__detail__label'>زمان تحویل</div><div class='order-details__detail__value'>"+deliveryType+"</div></div>";
-        output+="<div class='order-details__detail col-md-3'><div class='order-details__detail__label'>زمان تخمینی برحسب روز</div><div class='order-details__detail__value'>"+data.delivery_days+"</div></div>";
+        output+="<div class='order-details__detail col-md-4'><div class='order-details__detail__label'>زمان تخمینی برحسب روز</div><div class='order-details__detail__value'>"+data.delivery_days+"</div></div>";
         output+="<div class='order-details__detail col-md-4'><div class='order-details__detail__label'>نام سفارش دهنده</div><div class='order-details__detail__value'>"+data.orderer_fname+" "+data.orderer_lname+"</div></div>";
-        output+="<div class='order-details__detail col-md-5'><div class='order-details__detail__label'>ایمیل سفارش دهنده</div><div class='order-details__detail__value'>"+data.email+"</div></div>";
+        // output+="<div class='order-details__detail col-md-5'><div class='order-details__detail__label'>ایمیل سفارش دهنده</div><div class='order-details__detail__value'>"+data.email+"</div></div>";
         output+="<div class='order-details__detail col-md-4'><div class='order-details__detail__label'>تاریخ ثبت سفارش</div><div class='order-details__detail__value'>"+data.order_date_persian+"</div></div>";
         output+="<div class='order-details__detail col-md-4'><div class='order-details__detail__label'>کد تخفیف</div><div class='order-details__detail__value'>"+(data.discount_code ? data.discount_code:"استفاده نشده")+"</div></div>";
         if (data.discount_code){
@@ -182,6 +193,15 @@ function showOrderInfo(orderNumber){
                 filesHtml+="<a style='display:block' href='/public/uploads/order/"+file+"' download='"+file+"'>"+file+"</a>"
             })
             output+="<div class='order-details__detail col-md-4'><div class='order-details__detail__label'>فایل ها</div><div class='order-details__detail__value'>"+filesHtml+"</div></div>";
+        }
+        if (data.is_done != "0"){
+            console.log(data);
+            var files=data.completed_order_files.split(",");
+            var filesHtml="";
+            files.forEach(function(file){
+                filesHtml+="<a style='display:block' href='/public/uploads/order/completed/"+file+"' download='"+file+"'>"+file+"</a>"
+            })
+            output+="<div class='order-details__detail col-md-4'><div class='order-details__detail__label'>فایل های ترجمه شده</div><div class='order-details__detail__value'>"+filesHtml+"</div></div>";
         }
         output+="</div>";
         $("#orderDetailsWrap").html(output);
@@ -206,7 +226,6 @@ function showOrderInfo(orderNumber){
     //   })
   }
 function renderOrders(orders){
-    console.log(orders);
     var output="";
     $(".OrdersTable thead").css("display","table-header-group");
     for(var index in orders){
@@ -217,13 +236,14 @@ function renderOrders(orders){
             output+="<td data-label='تعداد صفحات'>"+Math.ceil(orders[index].word_numbers / 250)+"</td>";
             output+="<td data-label='زبان ترجمه'>"+translationLang+"</td>";
             output+="<td data-label='رشته'>"+orders[index].study_field+"</td>";
-            output+="<td data-label='کیفیت ترجمه'>"+translationQuality+"</td>";
+            // output+="<td data-label='کیفیت ترجمه'>"+translationQuality+"</td>";
+            output+="<td data-label='کد تخفیف'>"+(orders[index].discount_code ? orders[index].discount_code:"استفاده نشده")+"</td>";
+            output+="<td data-label='وضعیت'>"+(orders[index].is_done == '0' ? "انجام نشده":"انجام شده")+"</td>";
             output+="<td data-label='هزینه ترجمه'>"+parseInt(orders[index].order_price).toLocaleString("us")+"</td>";
             output+="<td data-label='سهم شما'>"+Math.ceil((orders[index].order_price*70)/100).toLocaleString("us")+"</td>";
             
-            output+="<td data-label='جزییات' class='order-more-info'>";
-            output+="<a onclick='showOrderInfo(\""+orders[index].order_id+"\")'><svg height='23px' viewBox='0 0 50 80' width='13px' xml:space='preserve'><polyline fill='none' points='45.63,75.8 0.375,38.087 45.63,0.375 ' stroke-linecap='round' stroke-linejoin='round' stroke-width='10' stroke='#a9a9a9'></polyline></svg></a>";
-            output+="<td data-label='عملیات' class='order-actions'> <button onclick='showOrderInfo(\""+ orders[index].order_number+"\")' class='expand-button order-action is--primary is--medium'> <span data-hover='جزییات سفارش'> <i class='icon-info'></i> </span> </button> <button onclick='setAsCompleted(\""+order.order_id+"\")' class='expand-button order-action is--success is--medium'> <span data-hover='اعلام کامل شدن سفارش'> <i class='icon-check'></i> </span> </button> </td>";
+
+            output+="<td data-label='عملیات' class='order-actions'> <button onclick='showOrderInfo(\""+ orders[index].order_number+"\")' class='expand-button order-action is--primary is--medium'> <span data-hover='جزییات سفارش'> <i class='icon-info'></i> </span> </button> <button onclick='setAsCompleted(\""+orders[index].order_id+"\")' class='expand-button order-action is--success is--medium'> <span data-hover='اعلام کامل شدن سفارش'> <i class='icon-check'></i> </span> </button> </td>";
             output+="</td>";
         output+="</tr>";
     }

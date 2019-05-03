@@ -39,8 +39,9 @@
                                         <th class="bg-teal-dark">تعداد صفحات</th>
                                         <th class="bg-teal-dark">زبان ترجمه</th>
                                         <th class="bg-teal-dark">رشته</th>
-                                        <th class="bg-teal-dark">کیفیت ترجمه</th>
+                                        {#<th class="bg-teal-dark">کیفیت ترجمه</th>#}
                                         <th class="bg-teal-dark">کد تخفیف</th>
+                                        <th class="bg-teal-dark">وضعیت</th>
                                         <th class="bg-teal-dark">هزینه ترجمه</th>
                                         <th class="bg-teal-dark">سهم شما</th>
                                         <th class="bg-teal-dark">جزییات</th>
@@ -59,12 +60,15 @@
                                             <td data-label="رشته">
                                                 {{order.study_field}}
                                             </td>
-                                            <td data-label="کیفیت ترجمه">
-                                                {{ order.translation_quality == "5" ? "نقره ای" : "طلایی" }}
-                                            </td>
+                                            {#<td data-label="کیفیت ترجمه">#}
+                                                {#{{ order.translation_quality == "5" ? "نقره ای" : "طلایی" }}#}
+                                            {#</td>#}
                                             <td data-label="کد تخفیف">
                                                 {{order.discount_code ? order.discount_code:"استفاده نشده"}}
                                                 </td>
+                                            <td data-label="وضعیت">
+                                                {{order.is_done == '0' ? "انجام نشده":"انجام شده"}}
+                                            </td>
                                             <td data-label="هزینه ترجمه">
                                                 {{order.order_price |number_format}}
                                                 تومان</td>
