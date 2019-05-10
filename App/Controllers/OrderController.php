@@ -6,7 +6,7 @@ use App\Models\Order;
 use App\Models\User;
 use Core\Config;
 use Core\Controller;
-
+use Core\Model;
 class OrderController extends Controller
 {
     private $combos = array(
@@ -135,7 +135,7 @@ class OrderController extends Controller
     }
     protected function mellat_payment($orderNumber, $gateway)
     {
-        $orderData = Order::by_number($orderNumber);
+        $orderData = Model::select("orders","*",['order_number'=>$orderNumber],true);
         $payment = new Payment();
         $payment->set_gateway($gateway);
         $orderPriceRial = \intval($orderData['order_price']) * 10;
@@ -148,7 +148,7 @@ class OrderController extends Controller
     }
     protected function zarinpal_payment($orderNumber, $gateway)
     {
-        $orderData = Order::by_number($orderNumber);
+        $orderData = Model::select("orders","*",['order_number'=>$orderNumber],true);
         $payment = new Payment();
         $payment->set_gateway($gateway);
         $payment->set_info(array(

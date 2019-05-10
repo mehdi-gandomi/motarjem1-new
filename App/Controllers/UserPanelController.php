@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Ticket;
 use Core\Config;
 use Core\Controller;
-
+use Core\Model;
 class UserPanelController extends Controller
 {
 
@@ -323,7 +323,7 @@ class UserPanelController extends Controller
     // START payment functions for unpaid order
     protected function mellat_payment($orderNumber, $gateway)
     {
-        $orderData = \App\Models\Order::by_number($orderNumber);
+        $orderData = Model::select("orders","*",['order_number'=>$orderNumber],true);
         $payment = new Payment();
         $payment->set_gateway($gateway);
         $orderPriceRial = \intval($orderData['order_price']) * 10;
@@ -336,7 +336,7 @@ class UserPanelController extends Controller
     }
     protected function zarinpal_payment($orderNumber, $gateway)
     {
-        $orderData = \App\Models\Order::by_number($orderNumber);
+        $orderData = Model::select("orders","*",['order_number'=>$orderNumber],true);
         $payment = new Payment();
         $payment->set_gateway($gateway);
         $payment->set_info(array(

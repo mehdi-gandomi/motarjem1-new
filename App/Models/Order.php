@@ -26,6 +26,7 @@ class Order extends Model
             }
             $postInfo['discount_code']= $postInfo['discount_code'] == "" ? 0:$postInfo['discount_code'];
             $postInfo['delivery_days'] = $priceInfo['duration'];
+            
             static::insert("orders", $postInfo);
             return array(
                 'priceInfo' => $priceInfo,
