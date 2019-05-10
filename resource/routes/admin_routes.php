@@ -37,6 +37,7 @@ $app->group('/admin', function ($app) use ($container) {
     $app->get("/translator/payment-requests/json","App\Controllers\AdminPanelController:get_translators_payment_requests_json");
     $app->get("/translator/payment-requests/set-payment-info","App\Controllers\AdminPanelController:get_payment_info_json");
     $app->get("/translators/account-info","App\Controllers\AdminPanelController:get_translators_account_info_page");
+    $app->get("/translators/account-info/search","App\Controllers\AdminPanelController:search_translators_account_info");
     $app->get("/site-revenue","App\Controllers\AdminPanelController:get_website_revenue_page");
     $app->get("/notifications","App\Controllers\AdminPanelController:get_notifications_page");
     $app->get("/notifications/new","App\Controllers\AdminPanelController:get_new_notification_page");

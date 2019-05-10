@@ -8,7 +8,7 @@
                 <h4 class="mt-3 mb-3">اطلاعات حساب بانکی مترجمان</h4>
                 <div class="table-search mt-5">
                     <div class="form-group">
-                        <input type="text" class="form-control light-table-filter" data-table="OrdersTable" placeholder="برای جستجو کلمه ای تایپ کنید...">
+                        <input type="text" id="searchKey" class="form-control light-table-filter"  placeholder="برای جستجو کلمه ای تایپ کنید...">
                     </div>
                 </div>
                 <table class="table OrdersTable is--responsive">
@@ -21,7 +21,7 @@
                         <th class="bg-teal-dark text-center">صاحب حساب</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="accountsWrapper">
                         {% for info in infos %}
                             <tr>
                                 <td data-label="ردیف">
@@ -81,6 +81,42 @@
                 }
             })
         }
+        function showAccounts(accounts){
+            let output="";
+            accounts.forEach(function (info) {
+                output+=`
+                  <tr>
+                        <td data-label="ردیف">
+                            ${info.username}
+                        </td>
+                        <td data-label="نام مترجم">
+                            <a title="اطلاعات مترجم" href="javascript:void(0)" aria-role="button"  onclick="showTranslatorInfo('${info.translator_id}')">${info.translator_fname + " " + info.translator_lname}</a>
+                        </td>
+                        <td data-label="شماره کارت">
+                            ${info.card_number}
+                        </td>
+                        <td data-label="شماره شبا">
+                            ${info.shaba_number ? info.shaba_number:"تعیین نشده"}
+                        </td>
+                        <td data-label="صاحب حساب">
+                            ${info.account_owner}
+                        </td>
+                  </tr>
+                `;
+            })
+            $("#accountsWrapper").html(output);
+        }
+        $("#searchKey").on("input",function (e) {
+            var value=$(this).val() ? $(this).val():"";
+            $.get("/admin/translators/account-info/search",{search:value},function (data,status) {
+                if (data.status){
+                    showAccounts(data.accounts);
+                }else{
+                    $("#accountsWrapper").html("<tr><td colspan='5'>متاسفانه کاربری با این مشخصات یافت نشد :(</td></tr>");
+                }
+            })
+
+        })
     </script>
-    <script src="/public/js/tableFilter.js"> </script>
+    {#<script src="/public/js/tableFilter.js"> </script>#}
 {% endblock %}

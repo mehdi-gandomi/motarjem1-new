@@ -473,6 +473,15 @@ class AdminPanelController extends Controller
         $translatorsAccountsCount=Admin::get_all_translators_account_info_count();
         return $this->view->render($res,"admin/admin/translators-account-info.twig",['infos'=>$translatorsAccounts,'current_page'=>$page,'count'=>$translatorsAccountsCount]);
     }
+
+    public function search_translators_account_info($req,$res,$args)
+    {
+        $accounts=Admin::filter_translators_account_info($req->getParam("search"));
+        if (count($accounts)){
+            return $res->withJson(['status'=>true,'accounts'=>$accounts]);
+        }
+        return $res->withJson(['status'=>false]);
+    }
     //get website revenue and currency info and render a page
     public function get_website_revenue_page($req,$res,$args)
     {

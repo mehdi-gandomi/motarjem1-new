@@ -673,4 +673,21 @@ class Admin extends Model
         }
     }
 
+    public static function filter_translators_account_info($search)
+    {
+        try{
+            $db=static::getDB();
+            $sql="SELECT translator_account.id,translator_account.translator_id,translator_account.card_number,translator_account.shaba_number,translator_account.bank_name,translator_account.account_owner,translators.fname AS translator_fname,translators.lname AS translator_lname,translators.username FROM `translator_account` INNER JOIN translators ON translators.translator_id = translator_account.translator_id WHERE translators.fname LIKE :fname OR translators.lname LIKE :lname OR translators.username LIKE :username";
+            $stmt=$db->prepare($sql);
+            $result=$stmt->execute([
+               'fname'=>"%$search%",
+               'lname'=>"%$search%",
+                'username'=>"%$search%",
+            ]);
+            return $result ? $stmt->fetchAll(PDO::FETCH_ASSOC):[];
+        }catch (\Exception $e){
+            return [];
+        }
+    }
+
 }
